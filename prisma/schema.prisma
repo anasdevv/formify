@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model Form {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  createdAt   DateTime @default(now())
+  published   Boolean  @default(false)
+  name        String
+  description String   @default("")
+  content     String   @default("[]")
+
+  visits      Int @default(0)
+  submissions Int @default(0)
+
+  shareUrl        String            @default(uuid())
+  FormSubmissions FormSubmissions[]
+
+  @@unique([name, userId])
+}
+
+model FormSubmissions {
+  id        Int      @id() @default(autoincrement())
+  createdAt DateTime @default(now())
+  form      Form     @relation(fields: [formId], references: [id])
+  formId    Int
+
+  content String
+}
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+model Project {
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String
+  date         String?
+  link         String?
+  technologies String[]
+  images       Image[]
+  coverImage   Image?   @relation("CoverImage", fields: [coverImageId], references: [id])
+  coverImageId Int?     @unique
+  endpoints    String[]
+  type         String?  @default("web")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  isDelted     Boolean? @default(false)
+}
+
+model Image {
+  id        Int      @id @default(autoincrement())
+  title     String
+  url       String
+  project   Project? @relation(fields: [projectId], references: [id])
+  projectId Int?
+
+  coverForProject Project? @relation("CoverImage")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PostImage {
+  id     String  @id @default(cuid())
+  Post   Post?   @relation(fields: [postId], references: [id])
+  postId String?
+  url    String
+}
+
+model Post {
+  id          String      @id @default(cuid())
+  title       String
+  content     String      @db.Text
+  status      PostStatus  @default(DRAFT)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  publishedAt DateTime?
+  images      PostImage[]
+  tags        Tag[]
+  isDelted    Boolean?    @default(false)
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  posts     Post[]
+  createdAt DateTime @default(now())
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
