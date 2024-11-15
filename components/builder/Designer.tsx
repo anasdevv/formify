@@ -38,7 +38,7 @@ function Designer() {
         const id = generateId();
         const type = active?.data?.current?.type;
         const newElement = FormElements[type as ElementType].construct(id);
-        addElement(elements.length, newElement);
+        addElement(elements?.length ?? 0, newElement);
         return;
       }
       //   second
@@ -62,8 +62,8 @@ function Designer() {
         const newElement = FormElements[type as ElementType].construct(id);
         console.log('voer ', over.data.current);
         const overId = over?.data?.current?.id;
-        const overElementIndex = elements.findIndex((el) => el.id === overId);
-        if (overElementIndex === -1) {
+        const overElementIndex = elements?.findIndex((el) => el.id === overId);
+        if (overElementIndex === -1 || !overElementIndex) {
           throw new Error('element not found');
         }
         let indexForNewElement = overElementIndex;
@@ -86,21 +86,26 @@ function Designer() {
       if (draggingDesignerElementOverAnotherDesignerElement) {
         const activeId = active?.data?.current?.elementId;
         const overId = over?.data?.current?.id;
-        const activeElementIndex = elements.findIndex(
+        const activeElementIndex = elements?.findIndex(
           (el) => el.id === activeId
         );
-        const overElementIndex = elements.findIndex((el) => el.id === overId);
+        const overElementIndex = elements?.findIndex((el) => el.id === overId);
 
-        if (overElementIndex === -1 || activeElementIndex === -1) {
+        if (
+          overElementIndex === -1 ||
+          activeElementIndex === -1 ||
+          !overElementIndex ||
+          !activeElementIndex
+        ) {
           throw new Error('Element not found');
         }
-        const activeElement = { ...elements[activeElementIndex] };
+        const activeElement = { ...elements![activeElementIndex] };
         removeElement(activeId);
         let indexForNewElement = overElementIndex;
         if (isBottomHalfDesignerElement) {
-          indexForNewElement = overElementIndex + 1;
+          indexForNewElement = (overElementIndex as number) + 1;
         }
-        addElement(indexForNewElement, activeElement);
+        addElement(indexForNewElement as number, activeElement);
       }
     },
   });
@@ -120,19 +125,19 @@ function Designer() {
             droppable.isOver && 'ring-4 ring-inset ring-primary'
           )}
         >
-          {!droppable.isOver && elements.length === 0 && (
+          {!droppable.isOver && elements?.length === 0 && (
             <p className='text-3xl text-muted-foreground flex flex-grow items-center font-bold'>
               Drop here
             </p>
           )}
-          {droppable.isOver && elements.length === 0 && (
+          {droppable.isOver && elements?.length === 0 && (
             <div className='p-4 w-full'>
               <div className='h-[120px] rounded-md bg-primary/20'></div>
             </div>
           )}
-          {elements?.length > 0 ? (
+          {elements && elements?.length > 0 ? (
             <div className='flex flex-col  w-full gap-2 p-4'>
-              {elements.map((el) => (
+              {elements?.map((el) => (
                 <DesignerElementWrapper element={el} key={el.id} />
               ))}
             </div>

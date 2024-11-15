@@ -97,7 +97,7 @@ const DesignerElementWrapper = ({
           //   topHalf.isOver && 'border-t-4 border-t-foreground'
         )}
       >
-        <DesignerElement formInstance={element} />
+        <DesignerElement formElementInstance={element} />
       </div>
       {bottomHalf.isOver && (
         <div className='absolute bottom-0  w-full rounded-md h-[7px] bg-primary  rounded-t-none'></div>

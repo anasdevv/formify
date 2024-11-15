@@ -14,11 +14,13 @@ export type FormElement = {
   };
 
   designerComponent: React.FC<{
-    formInstance: FormElementInstance;
+    formElementInstance: FormElementInstance;
   }>;
-  formComponent: React.FC;
+  formComponent: React.FC<{
+    formElementInstance: FormElementInstance;
+  }>;
   propertiesComponent: React.FC<{
-    formInstance: FormElementInstance;
+    formElementInstance: FormElementInstance;
   }>;
 };
 

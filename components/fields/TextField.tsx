@@ -32,7 +32,7 @@ const extraAttributes = {
 export const TextFieldFormElement: FormElement = {
   type,
   designerComponent: DesignerComponent,
-  formComponent: () => <div>form</div>,
+  formComponent: FormComponent,
   propertiesComponent: PropertiesComponent,
   construct: (id: string) => ({
     id,
@@ -50,11 +50,11 @@ type CustomInstance = FormElementInstance & {
 };
 
 function DesignerComponent({
-  formInstance,
+  formElementInstance,
 }: {
-  formInstance: FormElementInstance;
+  formElementInstance: FormElementInstance;
 }) {
-  const customeElementInstance = formInstance as CustomInstance;
+  const customeElementInstance = formElementInstance as CustomInstance;
   const { helperText, label, placeholder, required } =
     customeElementInstance.extraAttributes;
   return (
@@ -77,12 +77,12 @@ const propertiesFormSchema = z.object({
 
 type PropertiesFormSchema = z.infer<typeof propertiesFormSchema>;
 function PropertiesComponent({
-  formInstance,
+  formElementInstance,
 }: {
-  formInstance: FormElementInstance;
+  formElementInstance: FormElementInstance;
 }) {
   const { updateElement } = useDesignerContext();
-  const customInstance = formInstance as CustomInstance;
+  const customInstance = formElementInstance as CustomInstance;
   const form = useForm<PropertiesFormSchema>({
     resolver: zodResolver(propertiesFormSchema),
     mode: 'onBlur',
@@ -207,5 +207,24 @@ function PropertiesComponent({
         />
       </form>
     </Form>
+  );
+}
+
+function FormComponent({
+  formElementInstance,
+}: {
+  formElementInstance: FormElementInstance;
+}) {
+  const customeElementInstance = formElementInstance as CustomInstance;
+  const { helperText, label, placeholder, required } =
+    customeElementInstance.extraAttributes;
+  return (
+    <div className='flex flex-col gap-2 w-full'>
+      <Label>
+        {label} {Boolean(required) && '*'}
+      </Label>
+      <Input placeholder={placeholder} />
+      {Boolean(helperText) && <p className='text-xs'>{helperText}</p>}
+    </div>
   );
 }

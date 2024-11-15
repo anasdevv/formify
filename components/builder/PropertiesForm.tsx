@@ -22,7 +22,7 @@ const PropertiesForm = () => {
         </Button>
       </div>
       <Separator className='mb-4' />
-      <PropertiesForm formInstance={selectedElement} />
+      <PropertiesForm formElementInstance={selectedElement} />
     </div>
   );
 };
