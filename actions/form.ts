@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma';
 import { formSchema, FormSchemaType } from '@/schemas/form';
 import { currentUser } from '@clerk/nextjs/server';
+import invariant from 'tiny-invariant';
 
 class UserNotFoundErr extends Error {}
 
@@ -67,6 +68,23 @@ export async function GetForms() {
     },
     orderBy: {
       createdAt: 'desc',
+    },
+  });
+}
+
+export async function GetFormById(id: number) {
+  const user = await currentUser();
+  if (!user) {
+    throw new UserNotFoundErr();
+  }
+  console.log('id ss', id);
+  console.log('on server');
+  invariant(!!id, 'Invalid form id. Please dont mess with URL.');
+
+  return await prisma.form.findUnique({
+    where: {
+      userId: user.id,
+      id,
     },
   });
 }
